@@ -1,0 +1,7 @@
+{
+  "name": "Remixer Beats V1",
+  "description": "A comprehensive content creation tool combining text editing, AI text-to-speech, video generation (Veo), and automated B-roll composition.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

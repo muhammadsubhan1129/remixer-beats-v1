@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remix Beats AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              background: 'var(--color-background)',
+              surface: 'var(--color-surface)',
+              border: 'var(--color-border)',
+              text: {
+                main: 'var(--color-text-main)',
+                muted: 'var(--color-text-muted)'
+              },
+              primary: '#6366f1', // Indigo 500
+              secondary: '#d946ef', // Fuchsia 500
+              accent: '#06b6d4', // Cyan 500
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.3s ease-out forwards',
+              'slide-up': 'slideUp 0.3s ease-out forwards',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        /* Default DARK Theme */
+        --color-background: #09090b;
+        --color-surface: #18181b;
+        --color-border: rgba(255, 255, 255, 0.1);
+        --color-text-main: #e4e4e7;
+        --color-text-muted: #a1a1aa;
+      }
+
+      .light-mode {
+        /* LIGHT Theme */
+        --color-background: #f4f4f5; /* Zinc 100 */
+        --color-surface: #ffffff;    /* White */
+        --color-border: #e4e4e7;     /* Zinc 200 */
+        --color-text-main: #18181b;  /* Zinc 900 */
+        --color-text-muted: #52525b; /* Zinc 600 */
+      }
+
+      body {
+        background-color: var(--color-background);
+        color: var(--color-text-main);
+        font-family: 'Inter', sans-serif;
+        overflow: hidden; 
+        transition: background-color 0.5s ease, color 0.5s ease;
+      }
+
+      /* Subtle gradient overlay for depth in both themes */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image: 
+          radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%),
+          radial-gradient(circle at 85% 30%, rgba(217, 70, 239, 0.08), transparent 25%);
+      }
+
+      /* Custom Scrollbar */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent; 
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(128, 128, 128, 0.2); 
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(128, 128, 128, 0.4); 
+      }
+
+      /* Glass Utilities - Adapted for Light Mode support */
+      .glass-panel {
+        background: var(--color-surface);
+        opacity: 0.95;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--color-border);
+        box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1);
+      }
+      
+      .glass-card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        transition: all 0.2s ease;
+      }
+      .glass-card:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+      }
+
+      .glass-input {
+        background: var(--color-background);
+        border: 1px solid var(--color-border);
+        color: var(--color-text-main);
+        transition: all 0.2s;
+      }
+      .glass-input:focus {
+        border-color: rgba(99, 102, 241, 0.6);
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
+      }
+
+      .glass-button {
+        background: var(--color-background);
+        border: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+        transition: all 0.2s;
+      }
+      .glass-button:hover:not(:disabled) {
+        border-color: rgba(99, 102, 241, 0.3);
+        color: var(--color-text-main);
+        transform: translateY(-1px);
+      }
+      
+      .text-shadow {
+        text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      }
+
+      /* Markdown Content Styles */
+      .prose {
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+      .prose > *:first-child { margin-top: 0; }
+      .prose > *:last-child { margin-bottom: 0; }
+      
+      .prose h1, .prose h2, .prose h3 {
+        font-weight: 600;
+        margin-top: 1.2em;
+        margin-bottom: 0.6em;
+        color: var(--color-text-main);
+      }
+      .prose h1 { font-size: 1.3em; border-bottom: 1px solid var(--color-border); padding-bottom: 0.3em; }
+      .prose h2 { font-size: 1.15em; }
+      .prose h3 { font-size: 1.05em; }
+      
+      .prose p { margin-bottom: 0.8em; }
+      
+      .prose ul { list-style-type: disc; padding-left: 1.4em; margin-bottom: 0.8em; }
+      .prose ol { list-style-type: decimal; padding-left: 1.4em; margin-bottom: 0.8em; }
+      .prose li { margin-bottom: 0.3em; }
+      
+      .prose strong { font-weight: 700; color: var(--color-text-main); }
+      .prose em { font-style: italic; }
+      
+      .prose code { 
+        background: rgba(128,128,128,0.15); 
+        padding: 0.1em 0.3em; 
+        border-radius: 0.3em; 
+        font-family: 'JetBrains Mono', monospace; 
+        font-size: 0.9em;
+        color: var(--color-text-main);
+      }
+      
+      .prose pre {
+        background: rgba(0,0,0,0.3);
+        padding: 1em;
+        border-radius: 0.5em;
+        overflow-x: auto;
+        margin-bottom: 1em;
+        border: 1px solid var(--color-border);
+      }
+      .prose pre code {
+        background: transparent;
+        padding: 0;
+        color: #e4e4e7;
+        font-size: 0.85em;
+      }
+      
+      .prose blockquote {
+        border-left: 3px solid var(--color-border);
+        padding-left: 1em;
+        margin-bottom: 1em;
+        font-style: italic;
+        color: var(--color-text-muted);
+        background: rgba(128,128,128,0.05);
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        border-radius: 0 0.5em 0.5em 0;
+      }
+      
+      .prose a {
+        color: #38bdf8;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .prose a:hover {
+        color: #0ea5e9;
+      }
+
+      /* Specific adjustments for user bubbles to handle contrast */
+      .bg-primary .prose code {
+        background: rgba(255,255,255,0.2);
+        color: #fff;
+      }
+      .bg-primary .prose a {
+        color: #fff;
+      }
+      .bg-primary .prose blockquote {
+        border-left-color: rgba(255,255,255,0.4);
+        color: rgba(255,255,255,0.9);
+      }
+
+      /* Editor Flash Animation */
+      @keyframes success-flash {
+        0% { background-color: rgba(16, 185, 129, 0.3); }
+        100% { background-color: transparent; }
+      }
+      .animate-success-flash {
+        animation: success-flash 1s ease-out forwards;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "marked": "https://esm.sh/marked@12.0.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
